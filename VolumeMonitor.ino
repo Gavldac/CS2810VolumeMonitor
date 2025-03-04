@@ -21,78 +21,20 @@ void setup()
   pinMode(LED_BUILTIN, OUTPUT);
 
   // Initialize the LCD with a size of 16x2 (columns x rows)
-  lcd.begin(16, 2); // The 16 and 2 refer to 16 columns and 2 rows
-  lcd.setCursor(0, 0);        // Set cursor to top-left corner
+  lcd.begin(16, 2); //  16 columns and 2 rows on the display
+  lcd.setCursor(0, 0); // Set LCD cursor to top-left corner to write
 
-  analogWrite(vo, 120);
+  analogWrite(vo, 120); // sets the LCD contrast (0-255)
 
-  lcd.print("Hello, World!"); // Print the message
+  lcd.print("Hello, World!"); 
 }
 void loop()
 {
   // contrast += 20;
   // if (contrast > 255) contrast = 0;
-  // analogWrite(vo, contrast);
+  // analogWrite(vo, contrast);// testing for adjusting LCD contrast 
   digitalWrite(LED_BUILTIN, HIGH);
   delay(2000);
   digitalWrite(LED_BUILTIN, LOW);
   delay(500);
 }
-
-/*
-#include <LiquidCrystal.h>
-
-// Define the LCD screen pins
-const int rs = 7;
-const int en = 8;
-const int d4 = 9;
-const int d5 = 10;
-const int d6 = 11;
-const int d7 = 12;
-
-// Create an instance of the LiquidCrystal library
-LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
-
-// Define the time variables
-int hours = 0;
-int minutes = 2;
-int seconds = 0;
-
-void setup() {
-  // Initialize the LCD screen
-  lcd.begin(16, 2);
-  lcd.setCursor(0, 0);
-  lcd.print("Simple Clock");
-}
-
-void loop() {
-  // Update the time variables
-  seconds++;
-  if (seconds >= 60) {
-    seconds = 0;
-    minutes++;
-  }
-  if (minutes >= 60) {
-    minutes = 0;
-    hours++;
-  }
-  if (hours >= 24) {
-    hours = 0;
-  }
-
-  // Display the time on the LCD screen
-  lcd.setCursor(0, 1); // Move to the second line
-  lcd.print("Time: ");
-  if (hours < 10) lcd.print("0"); // Add leading zero
-  lcd.print(hours);
-  lcd.print(":");
-  if (minutes < 10) lcd.print("0"); // Add leading zero
-  lcd.print(minutes);
-  lcd.print(":");
-  if (seconds < 10) lcd.print("0"); // Add leading zero
-  lcd.print(seconds);
-
-  // Wait for 1 second before updating the time again
-  delay(1000);
-}
-*/
