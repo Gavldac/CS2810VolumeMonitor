@@ -1,0 +1,33 @@
+# Ignore Arduino build files
+*.elf
+*.hex
+*.o
+*.d
+*.eep
+*.lss
+*.map
+*.sym
+*.lst
+*.bin
+*.cache
+
+# Ignore IDE-specific files
+.idea/
+.vscode/
+*.sublime-workspace
+*.sublime-project
+
+# Ignore system files
+.DS_Store
+Thumbs.db
+
+# Ignore build directory
+build/
+
+# Ignore local settings
+*.local
+
+# Ignore compiled libraries
+*.a
+*.la
+*.so
