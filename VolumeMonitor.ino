@@ -1,98 +1,81 @@
 #include <LiquidCrystal.h>
 
-const int vo = 3; // VO is the contrast of the LCD screen and can be controlled with PWM
-const int rs = A4;
-const int e = A5;
+// LCD pin assignments (confirmed from your setup)
+const int vo = 3;
+const int rs = 13;
+const int e = 12;
 const int d4 = 2;
 const int d5 = 4;
 const int d6 = 7;
 const int d7 = 8;
 
-// int contrast = 0;
+// Microphone on analog pin A0
+const int mic = A0;
+
+// LED pins based on your reserved setup
+const int greenLED = 9;
+const int yellowLED = 10;
+const int redLED = 11;
 
 // LCD initialization
 LiquidCrystal lcd(rs, e, d4, d5, d6, d7);
 
-void setup()
-{
-  Serial.begin(9600); // Just tomake sure things are explicitly set
+int timer = 0;
+
+void setup() {
+  Serial.begin(9600);
 
   pinMode(vo, OUTPUT);
   pinMode(LED_BUILTIN, OUTPUT);
 
-  // Initialize the LCD with a size of 16x2 (columns x rows)
-  lcd.begin(16, 2); // The 16 and 2 refer to 16 columns and 2 rows
-  lcd.setCursor(0, 0);        // Set cursor to top-left corner
+  // Set LED pins to output
+  pinMode(greenLED, OUTPUT);
+  pinMode(yellowLED, OUTPUT);
+  pinMode(redLED, OUTPUT);
 
-  analogWrite(vo, 120);
-
-  lcd.print("Hello, World!"); // Print the message
-}
-void loop()
-{
-  // contrast += 20;
-  // if (contrast > 255) contrast = 0;
-  // analogWrite(vo, contrast);
-  digitalWrite(LED_BUILTIN, HIGH);
-  delay(2000);
-  digitalWrite(LED_BUILTIN, LOW);
-  delay(500);
-}
-
-/*
-#include <LiquidCrystal.h>
-
-// Define the LCD screen pins
-const int rs = 7;
-const int en = 8;
-const int d4 = 9;
-const int d5 = 10;
-const int d6 = 11;
-const int d7 = 12;
-
-// Create an instance of the LiquidCrystal library
-LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
-
-// Define the time variables
-int hours = 0;
-int minutes = 2;
-int seconds = 0;
-
-void setup() {
-  // Initialize the LCD screen
+  // LCD setup
   lcd.begin(16, 2);
+  analogWrite(vo, 120);  // Adjust contrast
   lcd.setCursor(0, 0);
-  lcd.print("Simple Clock");
+  lcd.print("Noise Detector");
+  delay(2000);
+  lcd.clear();
 }
 
 void loop() {
-  // Update the time variables
-  seconds++;
-  if (seconds >= 60) {
-    seconds = 0;
-    minutes++;
-  }
-  if (minutes >= 60) {
-    minutes = 0;
-    hours++;
-  }
-  if (hours >= 24) {
-    hours = 0;
+  timer = timer % 10;
+  int noise = analogRead(mic);  // Read the mic input (0-1023)
+  Serial.println(noise);        // Output for debugging
+
+  // Display the value on the LCD
+  // Updates 2x a second
+  if (timer%5 == 0){
+  lcd.setCursor(0, 0);
+  lcd.print("Noise Level:     ");
+  lcd.setCursor(0, 1);
+  lcd.print("Value: ");
+  lcd.print(noise);
   }
 
-  // Display the time on the LCD screen
-  lcd.setCursor(0, 1); // Move to the second line
-  lcd.print("Time: ");
-  if (hours < 10) lcd.print("0"); // Add leading zero
-  lcd.print(hours);
-  lcd.print(":");
-  if (minutes < 10) lcd.print("0"); // Add leading zero
-  lcd.print(minutes);
-  lcd.print(":");
-  if (seconds < 10) lcd.print("0"); // Add leading zero
-  lcd.print(seconds);
+  // Control LEDs based on noise level
+  if (noise < 200) {
+    digitalWrite(greenLED, HIGH);
+    digitalWrite(yellowLED, LOW);
+    digitalWrite(redLED, LOW);
+  } else if (noise < 400) {
+    digitalWrite(greenLED, HIGH);
+    digitalWrite(yellowLED, HIGH);
+    digitalWrite(redLED, LOW);
+  } else {
+    digitalWrite(greenLED, HIGH);
+    digitalWrite(yellowLED, HIGH);
+    digitalWrite(redLED, HIGH);
+  }
 
-  // Wait for 1 second before updating the time again
-  delay(1000);
+  // Blink built-in LED to show code is running
+  // digitalWrite(LED_BUILTIN, HIGH);
+  delay(100);
+  timer++;
+  // digitalWrite(LED_BUILTIN, LOW);
+  // delay(200);
 }
-*/
