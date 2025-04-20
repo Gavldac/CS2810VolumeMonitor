@@ -1,13 +1,16 @@
 #include <LiquidCrystal.h>
 
+
 // LCD pin assignments (confirmed from your setup)
-const int vo = 3;
+
+const int vo = 3; // VO is the contrast of the LCD screen and can be controlled with PWM output
 const int rs = 13;
 const int e = 12;
 const int d4 = 2;
 const int d5 = 4;
 const int d6 = 7;
 const int d7 = 8;
+
 
 // Microphone on analog pin A0
 const int mic = A0;
@@ -16,7 +19,6 @@ const int mic = A0;
 const int greenLED = 9;
 const int yellowLED = 10;
 const int redLED = 11;
-
 // LCD initialization
 LiquidCrystal lcd(rs, e, d4, d5, d6, d7);
 
@@ -76,6 +78,5 @@ void loop() {
   // digitalWrite(LED_BUILTIN, HIGH);
   delay(100);
   timer++;
-  // digitalWrite(LED_BUILTIN, LOW);
-  // delay(200);
+
 }
