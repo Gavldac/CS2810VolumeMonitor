@@ -1,6 +1,5 @@
 #include <LiquidCrystal.h>
 
-
 // LCD pin assignments (confirmed from your setup)
 
 const int vo = 3; // VO is the contrast of the LCD screen and can be controlled with PWM output
@@ -11,9 +10,9 @@ const int d5 = 4;
 const int d6 = 7;
 const int d7 = 8;
 
-
 // Microphone on analog pin A0
 const int mic = A0;
+unsigned int noise;
 
 // LED pins based on your reserved setup
 const int greenLED = 9;
@@ -22,9 +21,8 @@ const int redLED = 11;
 // LCD initialization
 LiquidCrystal lcd(rs, e, d4, d5, d6, d7);
 
-int timer = 0;
-
-void setup() {
+void setup()
+{
   Serial.begin(9600);
 
   pinMode(vo, OUTPUT);
@@ -37,46 +35,66 @@ void setup() {
 
   // LCD setup
   lcd.begin(16, 2);
-  analogWrite(vo, 120);  // Adjust contrast
+  analogWrite(vo, 100); // Adjust contrast
   lcd.setCursor(0, 0);
   lcd.print("Noise Detector");
   delay(2000);
-  lcd.clear();
+  // lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("Noise Level:   ");
 }
 
-void loop() {
-  timer = timer % 10;
-  int noise = analogRead(mic);  // Read the mic input (0-1023)
-  Serial.println(noise);        // Output for debugging
+void loop()
+{
+  unsigned long startTimer = millis();
+  unsigned int peakValue = 0;
+  unsigned int inMax = 0;    // Starts at 0 and is increased
+  unsigned int inMin = 600; // Starts at max and is reduced
+
+  // loop to just listen for 100ms and find the peak value
+  while (millis() - startTimer < 100)
+  {
+    // Read the mic input (0-1023)
+    noise = analogRead(mic); // Read the mic input (0-1023)
+    if (noise < 1024)        // this throws out extreme peaks that often just bad reads
+    {
+      inMax = max(inMax, noise);
+      inMin = min(inMin, noise);
+    }
+  }
+  peakValue = inMax - inMin; // Calculate the differnce between the max and min values
+
+  Serial.println(peakValue); // Output for debugging
 
   // Display the value on the LCD
-  // Updates 2x a second
-  if (timer%5 == 0){
   lcd.setCursor(0, 0);
-  lcd.print("Noise Level:     ");
+  lcd.print("Noise Level:    ");
   lcd.setCursor(0, 1);
-  lcd.print("Value: ");
-  lcd.print(noise);
-  }
+  lcd.print("Value:          ");
+  lcd.setCursor(8,1);
+  lcd.print(peakValue);
+  delay(100); // Delay for 0.1 seconds to finish writing to LCD
 
   // Control LEDs based on noise level
-  if (noise < 200) {
+  if (peakValue < 150)
+  {
     digitalWrite(greenLED, HIGH);
     digitalWrite(yellowLED, LOW);
     digitalWrite(redLED, LOW);
-  } else if (noise < 400) {
-    digitalWrite(greenLED, HIGH);
-    digitalWrite(yellowLED, HIGH);
-    digitalWrite(redLED, LOW);
-  } else {
+  }
+  else if (peakValue >= 350)
+  {
     digitalWrite(greenLED, HIGH);
     digitalWrite(yellowLED, HIGH);
     digitalWrite(redLED, HIGH);
+    delay(500); // Delay for 1 second
+  }
+  else 
+  {
+    digitalWrite(greenLED, HIGH);
+    digitalWrite(yellowLED, HIGH);
+    digitalWrite(redLED, LOW);
   }
 
-  // Blink built-in LED to show code is running
-  // digitalWrite(LED_BUILTIN, HIGH);
-  delay(100);
-  timer++;
-
+ 
 }
