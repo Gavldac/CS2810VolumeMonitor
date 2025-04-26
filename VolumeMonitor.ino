@@ -62,9 +62,12 @@ void loop()
       inMin = min(inMin, noise);
     }
   }
+  // Another option to determine a min value would be to use the startup loop to listen
+  // for one second and use that to find the difference of the peak detected.
+  // Would likely require input verification "inMin = max(0,inMin);" to avoid less than 0 issues.
   peakValue = inMax - inMin; // Calculate the differnce between the max and min values
 
-  Serial.println(peakValue); // Output for debugging
+  Serial.println(peakValue); // Serial output for debugging
 
   // Display the value on the LCD
   lcd.setCursor(0, 0);
@@ -73,7 +76,6 @@ void loop()
   lcd.print("Value:          ");
   lcd.setCursor(8,1);
   lcd.print(peakValue);
-  delay(100); // Delay for 0.1 seconds to finish writing to LCD
 
   // Control LEDs based on noise level
   if (peakValue < 150)
@@ -87,14 +89,16 @@ void loop()
     digitalWrite(greenLED, HIGH);
     digitalWrite(yellowLED, HIGH);
     digitalWrite(redLED, HIGH);
-    delay(500); // Delay for 1 second
+    delay(500); // Delay for 1/2 second to make sure output is seen
   }
   else 
-  {
+  { // Default middle case does not need a if() since we have already checked for
+    // being below or above a threshold already.
     digitalWrite(greenLED, HIGH);
     digitalWrite(yellowLED, HIGH);
     digitalWrite(redLED, LOW);
   }
+  delay(100); // Delay for 0.1 seconds to finish writing to LCD and LED output
 
  
 }
